@@ -36,8 +36,12 @@ public class ClamAVProxy {
    */
   @RequestMapping(value="/scan", method=RequestMethod.POST)
   public @ResponseBody String handleFileUpload(@RequestParam("name") String name,
+                                               @RequestParam("api_key") String api_key,
                                                @RequestParam("file") MultipartFile file) throws IOException{
-    if (!file.isEmpty()) {
+
+    herokuKey = String System.getenv("VIRUSSCANNER_APPLICATION");
+    if (api_key != herokuKey) throw new IllegalArgumentException("wrong token");
+    else if (!file.isEmpty()) {
       ClamAVClient a = new ClamAVClient(hostname, port, timeout);
       byte[] r = a.scan(file.getInputStream());
       return "Everything ok : " + ClamAVClient.isCleanReply(r) + "\n";
